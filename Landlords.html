@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Landlord Admin | Rent Master</title>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="index.html" class="logo">Rent Master</a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="findahome.html">Find a home</a></li>
+                <li><a href="Landlords.html">For landlords</a></li>
+                <li><a href="tenants.html">For tenants</a></li>
+                <li><a href="how.html">How it works</a></li>
+                <li><a href="pricing.html">Pricing</a></li>
+                <li><a href="login.html">Log in</a></li>
+                <li><a href="signup.html">Sign up</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const currentRole = localStorage.getItem('userRole');
+            if (currentRole !== 'landlord') {
+                window.location.href = 'login.html';
+                return;
+            }
+        });
+    </script>
+
+    <div class="landlord-shell">
+        <aside class="sidebar">
+            <div class="sidebar-brand">Rent Master</div>
+            <nav class="sidebar-nav">
+                <a class="sidebar-item active" href="#">Dashboard</a>
+                <a class="sidebar-item" href="#">Properties</a>
+                <a class="sidebar-item" href="#">Tenants</a>
+                <a class="sidebar-item" href="#">Payments</a>
+                <a class="sidebar-item" href="#">Reports</a>
+            </nav>
+        </aside>
+
+        <main class="admin-main">
+            <header class="dashboard-topbar">
+                <div>
+                    <p>Welcome back</p>
+                    <h1>Landlord Dashboard</h1>
+                </div>
+                <button type="button">Add property</button>
+            </header>
+
+            <section class="summary-grid">
+                <article class="summary-card">
+                    <div class="label">Rental income</div>
+                    <div class="value">$24,800</div>
+                    <div class="trend">+12.4% this month</div>
+                </article>
+                <article class="summary-card">
+                    <div class="label">Active tenants</div>
+                    <div class="value">38</div>
+                    <div class="trend">96% occupancy</div>
+                </article>
+                <article class="summary-card">
+                    <div class="label">Outstanding</div>
+                    <div class="value">$2,430</div>
+                    <div class="trend">5 tenants behind</div>
+                </article>
+                <article class="summary-card">
+                    <div class="label">Vacancies</div>
+                    <div class="value">2</div>
+                    <div class="trend">1 new listing</div>
+                </article>
+            </section>
+
+            <section class="panel-grid">
+                <div class="panel">
+                    <h3>Recent tenant payments</h3>
+                    <table class="payment-table">
+                        <thead>
+                            <tr>
+                                <th>Tenant</th>
+                                <th>Property</th>
+                                <th>Amount</th>
+                                <th>Due date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Grace M.</td>
+                                <td>Lakeview Villa</td>
+                                <td>$1,750</td>
+                                <td>02 Oct</td>
+                                <td><span class="status-badge status-paid">Paid</span></td>
+                            </tr>
+                            <tr>
+                                <td>Daniel K.</td>
+                                <td>Oak Street Flat</td>
+                                <td>$1,300</td>
+                                <td>05 Oct</td>
+                                <td><span class="status-badge status-pending">Pending</span></td>
+                            </tr>
+                            <tr>
+                                <td>Sarah T.</td>
+                                <td>Harbor House</td>
+                                <td>$1,980</td>
+                                <td>07 Oct</td>
+                                <td><span class="status-badge status-overdue">Overdue</span></td>
+                            </tr>
+                            <tr>
+                                <td>Joseph G.</td>
+                                <td>Bloom Residence</td>
+                                <td>$1,440</td>
+                                <td>10 Oct</td>
+                                <td><span class="status-badge status-paid">Paid</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="panel">
+                    <h3>Tenant overview</h3>
+                    <ul class="tenant-list">
+                        <li>
+                            <div>
+                                <div class="tenant-name">Nia L.</div>
+                                <div class="tenant-meta">2 days to due</div>
+                            </div>
+                            <span class="status-badge status-pending">Due</span>
+                        </li>
+                        <li>
+                            <div>
+                                <div class="tenant-name">Ethan B.</div>
+                                <div class="tenant-meta">Paid on time</div>
+                            </div>
+                            <span class="status-badge status-paid">Good</span>
+                        </li>
+                        <li>
+                            <div>
+                                <div class="tenant-name">Maya D.</div>
+                                <div class="tenant-meta">Needs follow-up</div>
+                            </div>
+                            <span class="status-badge status-overdue">Late</span>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Sign up | Rent Master</title>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="index.html" class="logo">Rent Master</a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="findahome.html">Find a home</a></li>
+                <li><a href="Landlords.html">For landlords</a></li>
+                <li><a href="tenants.html">For tenants</a></li>
+                <li><a href="how.html">How it works</a></li>
+                <li><a href="pricing.html">Pricing</a></li>
+                <li><a href="login.html">Log in</a></li>
+                <li><a href="signup.html">Sign up</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="auth-page">
+        <div class="auth-layout">
+            <section class="auth-panel">
+                <h2>Start with the right rental partner</h2>
+                <p>Whether you are searching for a home or managing a property, Rent Master helps you move faster with secure and flexible tools.</p>
+                <ul class="checklist" style="margin-top:1.5rem;">
+                    <li>Browse trustworthy listings</li>
+                    <li>Connect with verified landlords</li>
+                    <li>Enjoy faster property management</li>
+                </ul>
+            </section>
+
+            <section class="form-card">
+                <h2>Create your account</h2>
+                <form>
+                    <div class="form-field">
+                        <label for="fullname">Full name</label>
+                        <input id="fullname" type="text" placeholder="Jane Doe" required>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="signup-email">Email address</label>
+                        <input id="signup-email" type="email" placeholder="you@example.com" required>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="role">I am joining as</label>
+                        <select id="role" required>
+                            <option value="">Select an option</option>
+                            <option>Tenant</option>
+                            <option>Landlord</option>
+                            <option>Property manager</option>
+                        </select>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="signup-password">Password</label>
+                        <input id="signup-password" type="password" placeholder="Create a password" required>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="signup-role">Sign up as</label>
+                        <select id="signup-role" required>
+                            <option value="tenant">Tenant</option>
+                            <option value="landlord">Landlord</option>
+                        </select>
+                    </div>
+
+                    <button type="submit">Create account</button>
+                </form>
+
+                <p style="margin-top: 1.2rem; color: var(--muted-color);">Already have an account? <a href="login.html" class="form-link">Log in</a></p>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Rent Master | All Rights Reserved</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.querySelector('form');
+            if (!form) return;
+
+            form.addEventListener('submit', function (event) {
+                event.preventDefault();
+                const roleSelect = document.getElementById('signup-role');
+                const selectedRole = roleSelect ? roleSelect.value : 'tenant';
+                localStorage.setItem('userRole', selectedRole);
+                const destination = selectedRole === 'landlord' ? 'Landlords.html' : 'tenants.html';
+                window.location.href = destination;
+            });
+        });
+    </script>
+</body>
+</html>
