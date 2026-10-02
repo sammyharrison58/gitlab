@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Tenant Dashboard | Rent Master</title>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="index.html" class="logo">Rent Master</a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="findahome.html">Find a home</a></li>
+                <li><a href="tenants.html">For tenants</a></li>
+                <li><a href="tenant-dashboard.html">Rent history</a></li>
+                <li><a href="login.html" id="sign-out">Log out</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="tenant-dashboard">
+        <div class="dashboard-topbar">
+            <div>
+                <p>Tenant account</p>
+                <h1 id="welcome-heading">Rent and payment history</h1>
+            </div>
+        </div>
+
+        <section class="panel">
+            <h2>Select a home</h2>
+            <div class="tenant-property-picker">
+                <label for="property-select">Your home</label>
+                <select id="property-select"></select>
+                <p class="tenant-property-details" id="property-details"></p>
+            </div>
+        </section>
+
+        <section class="summary-grid" aria-label="Rent summary">
+            <article class="summary-card">
+                <div class="label">Monthly rent</div>
+                <div class="value" id="monthly-rent">—</div>
+            </article>
+            <article class="summary-card">
+                <div class="label">Paid months</div>
+                <div class="value" id="paid-months">—</div>
+            </article>
+            <article class="summary-card">
+                <div class="label">Unpaid rent</div>
+                <div class="value" id="unpaid-rent">—</div>
+            </article>
+        </section>
+
+        <section class="panel tenant-payment-panel">
+            <h2>Monthly payment history</h2>
+            <p class="tenant-demo-notice">Demo records are shown here. Your actual rent and payment history must be connected by your landlord.</p>
+            <table class="payment-table">
+                <thead>
+                    <tr>
+                        <th scope="col">Month</th>
+                        <th scope="col">Rent</th>
+                        <th scope="col">Due date</th>
+                        <th scope="col">Status</th>
+                    </tr>
+                </thead>
+                <tbody id="payment-history"></tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Rent Master | All Rights Reserved</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            if (localStorage.getItem('userRole') !== 'tenant') {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const paymentYear = new Date().getFullYear();
+            const properties = [
+                {
+                    id: 'lakeview-villa',
+                    name: 'Lakeview Villa',
+                    address: '18 Lakeview Road',
+                    rent: 1750,
+                    payments: ['paid', 'paid', 'paid', 'paid', 'paid', 'unpaid', 'paid', 'unpaid', 'paid', 'unpaid', 'unpaid', 'unpaid']
+                },
+                {
+                    id: 'oak-street-flat',
+                    name: 'Oak Street Flat',
+                    address: '42 Oak Street',
+                    rent: 1300,
+                    payments: ['paid', 'paid', 'unpaid', 'paid', 'paid', 'paid', 'unpaid', 'paid', 'paid', 'unpaid', 'unpaid', 'unpaid']
+                }
+            ];
+            const months = [
+                'January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'
+            ];
+            const currency = new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                maximumFractionDigits: 0
+            });
+            const propertySelect = document.getElementById('property-select');
+            const historyBody = document.getElementById('payment-history');
+
+            const tenantName = localStorage.getItem('tenantName');
+            const tenantEmail = localStorage.getItem('tenantEmail');
+            const displayName = tenantName || tenantEmail || 'Tenant';
+            document.getElementById('welcome-heading').textContent = 'Welcome, ' + displayName;
+
+            properties.forEach(function (property) {
+                const option = document.createElement('option');
+                option.value = property.id;
+                option.textContent = property.name;
+                propertySelect.appendChild(option);
+            });
+
+            function showProperty(property) {
+                const paidCount = property.payments.filter(function (status) {
+                    return status === 'paid';
+                }).length;
+                const unpaidCount = property.payments.filter(function (status, index) {
+                    return status === 'unpaid' && new Date(paymentYear, index, 1) <= new Date();
+                }).length;
+
+                document.getElementById('property-details').textContent = property.address;
+                document.getElementById('monthly-rent').textContent = currency.format(property.rent);
+                document.getElementById('paid-months').textContent = paidCount + ' of 12';
+                document.getElementById('unpaid-rent').textContent = currency.format(property.rent * unpaidCount);
+                historyBody.replaceChildren();
+
+                property.payments.forEach(function (recordedStatus, index) {
+                    const row = document.createElement('tr');
+                    const monthCell = document.createElement('td');
+                    const rentCell = document.createElement('td');
+                    const dueDateCell = document.createElement('td');
+                    const statusCell = document.createElement('td');
+                    const badge = document.createElement('span');
+                    const dueDate = new Date(paymentYear, index, 1);
+                    const status = recordedStatus === 'unpaid' && dueDate > new Date() ? 'upcoming' : recordedStatus;
+                    const statusLabel = status.charAt(0).toUpperCase() + status.slice(1);
+
+                    monthCell.textContent = months[index] + ' ' + paymentYear;
+                    rentCell.textContent = currency.format(property.rent);
+                    dueDateCell.textContent = '1 ' + months[index] + ' ' + paymentYear;
+                    badge.className = 'status-badge ' + (status === 'paid' ? 'status-paid' : status === 'unpaid' ? 'status-overdue' : 'status-pending');
+                    badge.textContent = statusLabel;
+                    statusCell.appendChild(badge);
+                    row.append(monthCell, rentCell, dueDateCell, statusCell);
+                    historyBody.appendChild(row);
+                });
+            }
+
+            propertySelect.addEventListener('change', function () {
+                const selectedProperty = properties.find(function (property) {
+                    return property.id === propertySelect.value;
+                });
+                if (selectedProperty) showProperty(selectedProperty);
+            });
+
+            showProperty(properties[0]);
+            document.getElementById('sign-out').addEventListener('click', function () {
+                localStorage.removeItem('userRole');
+                localStorage.removeItem('tenantName');
+                localStorage.removeItem('tenantEmail');
+            });
+        });
+    </script>
+</body>
+</html>

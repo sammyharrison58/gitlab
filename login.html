@@ -86,7 +86,14 @@
                 const roleSelect = document.getElementById('role');
                 const selectedRole = roleSelect ? roleSelect.value : 'tenant';
                 localStorage.setItem('userRole', selectedRole);
-                const destination = selectedRole === 'landlord' ? 'Landlords.html' : 'tenants.html';
+                if (selectedRole === 'tenant') {
+                    localStorage.setItem('tenantEmail', document.getElementById('email').value.trim());
+                    localStorage.removeItem('tenantName');
+                } else {
+                    localStorage.removeItem('tenantName');
+                    localStorage.removeItem('tenantEmail');
+                }
+                const destination = selectedRole === 'landlord' ? 'Landlords.html' : 'tenant-dashboard.html';
                 window.location.href = destination;
             });
         });

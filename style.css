@@ -434,6 +434,39 @@ blockquote {
     color: #b91c1c;
 }
 
+.tenant-dashboard {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 3rem;
+}
+
+.tenant-property-picker {
+    max-width: 480px;
+    margin-bottom: 1.5rem;
+}
+
+.tenant-property-picker label {
+    display: block;
+    margin-bottom: 0.45rem;
+    font-weight: 600;
+    color: var(--secondary-color);
+}
+
+.tenant-property-details {
+    margin-top: 0.45rem;
+    color: var(--muted-color);
+}
+
+.tenant-payment-panel {
+    overflow-x: auto;
+}
+
+.tenant-demo-notice {
+    margin-bottom: 1rem;
+    color: var(--muted-color);
+    font-size: 0.9rem;
+}
+
 .tenant-list {
     list-style: none;
     display: grid;
@@ -630,6 +663,14 @@ footer p {
 
     .auth-layout {
         grid-template-columns: 1fr;
+    }
+
+    .tenant-dashboard {
+        padding: 1.5rem 1rem 2rem;
+    }
+
+    .tenant-dashboard .dashboard-topbar {
+        align-items: flex-start;
     }
 
     .hero {

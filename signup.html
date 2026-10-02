@@ -49,26 +49,17 @@
                     </div>
 
                     <div class="form-field">
-                        <label for="role">I am joining as</label>
-                        <select id="role" required>
+                        <label for="signup-role">I am joining as</label>
+                        <select id="signup-role" required>
                             <option value="">Select an option</option>
-                            <option>Tenant</option>
-                            <option>Landlord</option>
-                            <option>Property manager</option>
+                            <option value="tenant">Tenant</option>
+                            <option value="landlord">Landlord</option>
                         </select>
                     </div>
 
                     <div class="form-field">
                         <label for="signup-password">Password</label>
                         <input id="signup-password" type="password" placeholder="Create a password" required>
-                    </div>
-
-                    <div class="form-field">
-                        <label for="signup-role">Sign up as</label>
-                        <select id="signup-role" required>
-                            <option value="tenant">Tenant</option>
-                            <option value="landlord">Landlord</option>
-                        </select>
                     </div>
 
                     <button type="submit">Create account</button>
@@ -93,7 +84,14 @@
                 const roleSelect = document.getElementById('signup-role');
                 const selectedRole = roleSelect ? roleSelect.value : 'tenant';
                 localStorage.setItem('userRole', selectedRole);
-                const destination = selectedRole === 'landlord' ? 'Landlords.html' : 'tenants.html';
+                if (selectedRole === 'tenant') {
+                    localStorage.setItem('tenantName', document.getElementById('fullname').value.trim());
+                    localStorage.setItem('tenantEmail', document.getElementById('signup-email').value.trim());
+                } else {
+                    localStorage.removeItem('tenantName');
+                    localStorage.removeItem('tenantEmail');
+                }
+                const destination = selectedRole === 'landlord' ? 'Landlords.html' : 'tenant-dashboard.html';
                 window.location.href = destination;
             });
         });
