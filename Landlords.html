@@ -37,24 +37,43 @@
         <aside class="sidebar">
             <div class="sidebar-brand">Rent Master</div>
             <nav class="sidebar-nav">
-                <a class="sidebar-item active" href="#">Dashboard</a>
-                <a class="sidebar-item" href="#">Properties</a>
-                <a class="sidebar-item" href="#">Tenants</a>
-                <a class="sidebar-item" href="#">Payments</a>
-                <a class="sidebar-item" href="#">Reports</a>
+                <a class="sidebar-item active" href="#dashboard">Dashboard</a>
+                <a class="sidebar-item" href="#properties">Properties</a>
+                <a class="sidebar-item" href="#tenants">Tenants</a>
+                <a class="sidebar-item" href="#payments">Payments</a>
+                <a class="sidebar-item" href="#reports">Reports</a>
             </nav>
         </aside>
 
         <main class="admin-main">
-            <header class="dashboard-topbar">
+            <header class="dashboard-topbar" id="dashboard">
                 <div>
                     <p>Welcome back</p>
                     <h1>Landlord Dashboard</h1>
                 </div>
-                <button type="button">Add property</button>
+                <button type="button" id="show-property-form" aria-controls="property-form" aria-expanded="false">Add property</button>
             </header>
 
-            <section class="summary-grid">
+            <form class="panel" id="property-form" hidden>
+                <h2>Add a property</h2>
+                <div class="form-field">
+                    <label for="property-name">Property name</label>
+                    <input id="property-name" name="name" required>
+                </div>
+                <div class="form-field">
+                    <label for="property-address">Address</label>
+                    <input id="property-address" name="address" required>
+                </div>
+                <div class="form-field">
+                    <label for="property-rent">Monthly rent (USD)</label>
+                    <input id="property-rent" name="rent" type="number" min="1" step="1" required>
+                </div>
+                <button type="submit">Save property</button>
+                <button type="button" class="btn-secondary" id="cancel-property-form">Cancel</button>
+                <p id="property-form-message" role="status" aria-live="polite"></p>
+            </form>
+
+            <section class="summary-grid" aria-label="Dashboard summary">
                 <article class="summary-card">
                     <div class="label">Rental income</div>
                     <div class="value">$24,800</div>
@@ -70,15 +89,15 @@
                     <div class="value">$2,430</div>
                     <div class="trend">5 tenants behind</div>
                 </article>
-                <article class="summary-card">
+                <article class="summary-card" id="vacancy-summary">
                     <div class="label">Vacancies</div>
-                    <div class="value">2</div>
-                    <div class="trend">1 new listing</div>
+                    <div class="value" id="vacancy-count">2</div>
+                    <div class="trend" id="vacancy-trend">1 new listing</div>
                 </article>
             </section>
 
             <section class="panel-grid">
-                <div class="panel">
+                <div class="panel" id="payments">
                     <h3>Recent tenant payments</h3>
                     <table class="payment-table">
                         <thead>
@@ -123,7 +142,7 @@
                     </table>
                 </div>
 
-                <div class="panel">
+                <div class="panel" id="tenants">
                     <h3>Tenant overview</h3>
                     <ul class="tenant-list">
                         <li>
@@ -150,7 +169,128 @@
                     </ul>
                 </div>
             </section>
+
+            <section class="panel" id="properties" style="margin-top: 1.25rem;">
+                <h2>Properties</h2>
+                <p id="property-list-empty">No additional properties have been added.</p>
+                <ul class="tenant-list" id="property-list"></ul>
+            </section>
+
+            <section class="panel" id="reports" style="margin-top: 1.25rem;">
+                <h2>Reports</h2>
+                <p>Download a CSV summary of the current rental income, tenant, outstanding balance, and vacancy figures.</p>
+                <button type="button" id="download-report">Download report</button>
+            </section>
         </main>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            if (localStorage.getItem('userRole') !== 'landlord') return;
+
+            const storageKey = 'landlordProperties';
+            let properties = JSON.parse(localStorage.getItem(storageKey) || '[]');
+            const propertyForm = document.getElementById('property-form');
+            const propertyList = document.getElementById('property-list');
+            const emptyPropertyMessage = document.getElementById('property-list-empty');
+            const addPropertyButton = document.getElementById('show-property-form');
+
+            function renderProperties() {
+                propertyList.replaceChildren();
+                emptyPropertyMessage.hidden = properties.length > 0;
+
+                properties.forEach(function (property) {
+                    const item = document.createElement('li');
+                    const details = document.createElement('div');
+                    const name = document.createElement('div');
+                    const address = document.createElement('div');
+                    const rent = document.createElement('span');
+
+                    name.className = 'tenant-name';
+                    name.textContent = property.name;
+                    address.className = 'tenant-meta';
+                    address.textContent = property.address;
+                    rent.className = 'status-badge status-pending';
+                    rent.textContent = '$' + Number(property.rent).toLocaleString('en-US') + '/mo';
+                    details.append(name, address);
+                    item.append(details, rent);
+                    propertyList.appendChild(item);
+                });
+
+                const vacancyCount = document.getElementById('vacancy-count');
+                const vacancyTrend = document.getElementById('vacancy-trend');
+                vacancyCount.textContent = String(2 + properties.length);
+                vacancyTrend.textContent = properties.length
+                    ? properties.length + ' new listing' + (properties.length === 1 ? '' : 's')
+                    : '1 new listing';
+            }
+
+            addPropertyButton.addEventListener('click', function () {
+                propertyForm.hidden = false;
+                addPropertyButton.setAttribute('aria-expanded', 'true');
+                document.getElementById('property-name').focus();
+            });
+
+            document.getElementById('cancel-property-form').addEventListener('click', function () {
+                propertyForm.reset();
+                propertyForm.hidden = true;
+                addPropertyButton.setAttribute('aria-expanded', 'false');
+                document.getElementById('property-form-message').textContent = '';
+            });
+
+            propertyForm.addEventListener('submit', function (event) {
+                event.preventDefault();
+                if (!propertyForm.reportValidity()) return;
+
+                const formData = new FormData(propertyForm);
+                const property = {
+                    name: String(formData.get('name')).trim(),
+                    address: String(formData.get('address')).trim(),
+                    rent: Number(formData.get('rent'))
+                };
+                if (!property.name || !property.address || !Number.isFinite(property.rent) || property.rent <= 0) {
+                    document.getElementById('property-form-message').textContent = 'Enter a name, address, and valid monthly rent.';
+                    return;
+                }
+
+                properties.push(property);
+                localStorage.setItem(storageKey, JSON.stringify(properties));
+                propertyForm.reset();
+                propertyForm.hidden = true;
+                addPropertyButton.setAttribute('aria-expanded', 'false');
+                document.getElementById('property-form-message').textContent = '';
+                renderProperties();
+                document.getElementById('properties').scrollIntoView({ behavior: 'smooth' });
+            });
+
+            document.getElementById('download-report').addEventListener('click', function () {
+                const rows = [
+                    ['Metric', 'Value'],
+                    ['Rental income', '$24,800'],
+                    ['Active tenants', '38'],
+                    ['Outstanding', '$2,430'],
+                    ['Vacancies', String(2 + properties.length)]
+                ];
+                const csv = rows.map(function (row) {
+                    return row.map(function (value) {
+                        return '"' + value.replace(/"/g, '""') + '"';
+                    }).join(',');
+                }).join('\r\n');
+                const report = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+                const link = document.createElement('a');
+                const reportUrl = URL.createObjectURL(report);
+                link.href = reportUrl;
+                link.download = 'rent-master-report.csv';
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+                window.setTimeout(function () {
+                    URL.revokeObjectURL(reportUrl);
+                }, 0);
+            });
+
+            renderProperties();
+        });
+    </script>
 </body>
 </html>
