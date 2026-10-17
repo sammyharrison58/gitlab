@@ -3,174 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="View your rental details, landlord payment instructions and rent records.">
     <link rel="stylesheet" href="style.css">
-    <title>Tenant Dashboard | Rent Master</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js" defer></script>
+    <script src="supabase-config.js" defer></script>
+    <script src="app.js" defer></script>
+    <script src="tenant.js" defer></script>
+    <title>My Rental | Rent Master</title>
 </head>
-<body>
+<body class="app-page">
     <header>
-        <nav>
+        <nav aria-label="Main navigation">
             <a href="index.html" class="logo">Rent Master</a>
             <ul class="nav-links">
-                <li><a href="index.html">Home</a></li>
                 <li><a href="findahome.html">Find a home</a></li>
-                <li><a href="tenants.html">For tenants</a></li>
-                <li><a href="tenant-dashboard.html">Rent history</a></li>
-                <li><a href="login.html" id="sign-out">Log out</a></li>
+                <li><a href="how.html">How it works</a></li>
+                <li><a href="pricing.html">Pricing</a></li>
+                <li><button type="button" class="nav-text-button" id="sign-out">Log out</button></li>
             </ul>
         </nav>
     </header>
 
     <main class="tenant-dashboard">
-        <div class="dashboard-topbar">
-            <div>
-                <p>Tenant account</p>
-                <h1 id="welcome-heading">Rent and payment history</h1>
-            </div>
-        </div>
+        <p class="production-notice"><strong>Pay your landlord directly.</strong> Use the Till or Paybill details below, then submit your M-Pesa receipt reference. Your landlord must verify the receipt before a payment is marked confirmed. Rent Master does not collect, hold or transfer your money.</p>
+        <p class="production-notice" data-requires-backend hidden></p>
 
-        <section class="panel">
-            <h2>Select a home</h2>
-            <div class="tenant-property-picker">
-                <label for="property-select">Your home</label>
-                <select id="property-select"></select>
-                <p class="tenant-property-details" id="property-details"></p>
-            </div>
-        </section>
+        <div class="dashboard-topbar">
+            <div><p>Tenant account</p><h1 id="welcome-heading">My rental</h1></div>
+        </div>
+        <p class="auth-status" id="tenant-message" role="status" aria-live="polite"></p>
 
         <section class="summary-grid" aria-label="Rent summary">
-            <article class="summary-card">
-                <div class="label">Monthly rent</div>
-                <div class="value" id="monthly-rent">—</div>
-            </article>
-            <article class="summary-card">
-                <div class="label">Paid months</div>
-                <div class="value" id="paid-months">—</div>
-            </article>
-            <article class="summary-card">
-                <div class="label">Unpaid rent</div>
-                <div class="value" id="unpaid-rent">—</div>
-            </article>
+            <article class="summary-card"><div class="label">Active rentals</div><div class="value" id="rental-count">—</div></article>
+            <article class="summary-card"><div class="label">Pending review</div><div class="value" id="pending-count">—</div></article>
+            <article class="summary-card"><div class="label">Confirmed this month</div><div class="value" id="confirmed-total">—</div></article>
         </section>
 
-        <section class="panel tenant-payment-panel">
-            <h2>Monthly payment history</h2>
-            <p class="tenant-demo-notice">Demo records are shown here. Your actual rent and payment history must be connected by your landlord.</p>
-            <table class="payment-table">
-                <thead>
-                    <tr>
-                        <th scope="col">Month</th>
-                        <th scope="col">Rent</th>
-                        <th scope="col">Due date</th>
-                        <th scope="col">Status</th>
-                    </tr>
-                </thead>
-                <tbody id="payment-history"></tbody>
-            </table>
+        <section class="panel management-section">
+            <div class="management-heading"><div><h2>Your home and payment details</h2><p>Payment details are provided by your landlord.</p></div></div>
+            <div id="tenant-properties" class="management-card-grid"></div>
+            <p class="empty-state" id="no-tenancy-message" hidden>No active rental is linked to your account yet. Ask your landlord to register you using this verified email address.</p>
+        </section>
+
+        <section class="panel management-form" id="payment-submit-panel" hidden>
+            <h2>Submit a rent reference</h2>
+            <form id="payment-form">
+                <div class="management-form-grid">
+                    <div class="form-field"><label for="payment-property">Property</label><select id="payment-property" required></select></div>
+                    <div class="form-field"><label for="payment-month">Rent month</label><input id="payment-month" type="month" required></div>
+                    <div class="form-field">
+                        <label for="payment-reference">M-Pesa receipt reference</label>
+                        <input id="payment-reference" required minlength="8" maxlength="12" pattern="[A-Za-z0-9]{8,12}" autocomplete="off" aria-describedby="payment-reference-help">
+                        <small id="payment-reference-help">Enter the 8–12 character transaction code from your M-Pesa receipt after paying your landlord directly.</small>
+                    </div>
+                </div>
+                <button type="submit" id="payment-submit">Submit for review</button>
+            </form>
+        </section>
+
+        <section class="panel management-section">
+            <div class="management-heading"><div><h2>Rent payment history</h2><p>Keep your M-Pesa receipts; Rent Master records the reference and your landlord's review.</p></div></div>
+            <div class="table-scroll">
+                <table class="payment-table">
+                    <thead><tr><th scope="col">Property</th><th scope="col">Rent month</th><th scope="col">Amount</th><th scope="col">Receipt reference</th><th scope="col">Submitted</th><th scope="col">Status</th></tr></thead>
+                    <tbody id="payment-history"></tbody>
+                </table>
+            </div>
+            <p class="empty-state" id="payment-history-empty">No payment references submitted yet.</p>
+        </section>
+
+        <section class="panel management-section">
+            <div class="management-heading"><div><h2>Account notifications</h2><p>Important account and payment updates. A copy is sent to your verified email address.</p></div></div>
+            <ul class="notice-list" id="tenant-notices"></ul>
+            <p class="empty-state" id="notice-list-empty">You have no notifications yet.</p>
         </section>
     </main>
 
-    <footer>
-        <p>&copy; 2026 Rent Master | All Rights Reserved</p>
-    </footer>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            if (localStorage.getItem('userRole') !== 'tenant') {
-                window.location.href = 'login.html';
-                return;
-            }
-
-            const paymentYear = new Date().getFullYear();
-            const properties = [
-                {
-                    id: 'lakeview-villa',
-                    name: 'Lakeview Villa',
-                    address: '18 Lakeview Road',
-                    rent: 1750,
-                    payments: ['paid', 'paid', 'paid', 'paid', 'paid', 'unpaid', 'paid', 'unpaid', 'paid', 'unpaid', 'unpaid', 'unpaid']
-                },
-                {
-                    id: 'oak-street-flat',
-                    name: 'Oak Street Flat',
-                    address: '42 Oak Street',
-                    rent: 1300,
-                    payments: ['paid', 'paid', 'unpaid', 'paid', 'paid', 'paid', 'unpaid', 'paid', 'paid', 'unpaid', 'unpaid', 'unpaid']
-                }
-            ];
-            const months = [
-                'January', 'February', 'March', 'April', 'May', 'June',
-                'July', 'August', 'September', 'October', 'November', 'December'
-            ];
-            const currency = new Intl.NumberFormat('en-US', {
-                style: 'currency',
-                currency: 'USD',
-                maximumFractionDigits: 0
-            });
-            const propertySelect = document.getElementById('property-select');
-            const historyBody = document.getElementById('payment-history');
-
-            const tenantName = localStorage.getItem('tenantName');
-            const tenantEmail = localStorage.getItem('tenantEmail');
-            const displayName = tenantName || tenantEmail || 'Tenant';
-            document.getElementById('welcome-heading').textContent = 'Welcome, ' + displayName;
-
-            properties.forEach(function (property) {
-                const option = document.createElement('option');
-                option.value = property.id;
-                option.textContent = property.name;
-                propertySelect.appendChild(option);
-            });
-
-            function showProperty(property) {
-                const paidCount = property.payments.filter(function (status) {
-                    return status === 'paid';
-                }).length;
-                const unpaidCount = property.payments.filter(function (status, index) {
-                    return status === 'unpaid' && new Date(paymentYear, index, 1) <= new Date();
-                }).length;
-
-                document.getElementById('property-details').textContent = property.address;
-                document.getElementById('monthly-rent').textContent = currency.format(property.rent);
-                document.getElementById('paid-months').textContent = paidCount + ' of 12';
-                document.getElementById('unpaid-rent').textContent = currency.format(property.rent * unpaidCount);
-                historyBody.replaceChildren();
-
-                property.payments.forEach(function (recordedStatus, index) {
-                    const row = document.createElement('tr');
-                    const monthCell = document.createElement('td');
-                    const rentCell = document.createElement('td');
-                    const dueDateCell = document.createElement('td');
-                    const statusCell = document.createElement('td');
-                    const badge = document.createElement('span');
-                    const dueDate = new Date(paymentYear, index, 1);
-                    const status = recordedStatus === 'unpaid' && dueDate > new Date() ? 'upcoming' : recordedStatus;
-                    const statusLabel = status.charAt(0).toUpperCase() + status.slice(1);
-
-                    monthCell.textContent = months[index] + ' ' + paymentYear;
-                    rentCell.textContent = currency.format(property.rent);
-                    dueDateCell.textContent = '1 ' + months[index] + ' ' + paymentYear;
-                    badge.className = 'status-badge ' + (status === 'paid' ? 'status-paid' : status === 'unpaid' ? 'status-overdue' : 'status-pending');
-                    badge.textContent = statusLabel;
-                    statusCell.appendChild(badge);
-                    row.append(monthCell, rentCell, dueDateCell, statusCell);
-                    historyBody.appendChild(row);
-                });
-            }
-
-            propertySelect.addEventListener('change', function () {
-                const selectedProperty = properties.find(function (property) {
-                    return property.id === propertySelect.value;
-                });
-                if (selectedProperty) showProperty(selectedProperty);
-            });
-
-            showProperty(properties[0]);
-            document.getElementById('sign-out').addEventListener('click', function () {
-                localStorage.removeItem('userRole');
-                localStorage.removeItem('tenantName');
-                localStorage.removeItem('tenantEmail');
-            });
-        });
-    </script>
+    <footer><p>&copy; 2026 Rent Master. All rights reserved.</p></footer>
 </body>
 </html>

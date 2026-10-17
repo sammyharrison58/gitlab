@@ -1,0 +1,4 @@
+project_id = "rent-master"
+
+[functions.rental-actions]
+verify_jwt = true

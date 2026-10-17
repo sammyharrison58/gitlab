@@ -3,84 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Explore rental homes and keep your Rent Master rental details and payment references organized.">
     <link rel="stylesheet" href="style.css">
     <title>For Tenants | Rent Master</title>
 </head>
-<body>
-    <header>
-        <nav>
-            <a href="index.html" class="logo">Rent Master</a>
+<body class="home-page">
+    <header class="home-header">
+        <nav class="home-nav" aria-label="Main navigation">
+            <a href="index.html" class="logo">Rent Master<span class="brand-period">.</span></a>
             <ul class="nav-links">
-                <li><a href="index.html">Home</a></li>
                 <li><a href="findahome.html">Find a home</a></li>
                 <li><a href="Landlords.html">For landlords</a></li>
-                <li><a href="tenants.html">For tenants</a></li>
                 <li><a href="how.html">How it works</a></li>
-                <li><a href="pricing.html">Pricing</a></li>
+                <li><a href="pricing.html">Plans</a></li>
                 <li><a href="login.html">Log in</a></li>
-                <li><a href="signup.html">Sign up</a></li>
+                <li><a class="nav-signup" href="signup.html?role=tenant">Create account</a></li>
             </ul>
         </nav>
     </header>
-
     <main>
-        <section class="hero" style="background-image: linear-gradient(rgba(15,23,42,0.75), rgba(15,23,42,0.75)), url('./image/img1.jpg');">
-            <div class="hero-content">
-                <h1>Find a place that fits your life</h1>
-                <p>Browse homes, compare spaces, and connect with landlords who make the renting experience simple and transparent.</p>
-                <a href="findahome.html" class="btn">Browse homes</a>
+        <section class="listings-hero">
+            <div class="listings-hero-inner">
+                <p class="eyebrow">For tenants</p>
+                <h1>Your home details, without the guesswork.</h1>
+                <p>Find landlord-published rentals, view the details shared with you and keep payment references together in your account.</p>
+                <a href="findahome.html" class="btn">Browse available homes <span aria-hidden="true">&rarr;</span></a>
             </div>
         </section>
-
-        <section class="container">
-            <div class="section-intro">
-                <h2>What tenants love</h2>
-                <p>Everything you need to make a confident decision, from search filters to reliable listings.</p>
-                <p style="margin-top: 1rem;"><a class="form-link" href="login.html">Already renting? Log in to view your rent and payment history.</a></p>
-            </div>
-
-            <div class="features-grid">
-                <article class="feature-card">
-                    <h3>Smart search</h3>
-                    <p>Filter by location, budget, room type, and amenities to match your preferred lifestyle.</p>
-                </article>
-                <article class="feature-card">
-                    <h3>Verified listings</h3>
-                    <p>Browse homes from trusted landlords and choose the option that best suits your next move.</p>
-                </article>
-                <article class="feature-card">
-                    <h3>Clear next steps</h3>
-                    <p>Know exactly what to expect before booking a viewing, submitting an application, or signing a lease.</p>
-                </article>
+        <section class="home-section">
+            <div class="home-section-heading"><div><p class="eyebrow">Your rental account</p><h2>Know what to expect.</h2></div></div>
+            <div class="home-benefit-grid">
+                <article class="home-benefit-card"><span class="benefit-number">01</span><h3>Get access from your landlord</h3><p>Use the same verified email address your landlord registered to connect to your rental.</p></article>
+                <article class="home-benefit-card"><span class="benefit-number">02</span><h3>Review payment instructions</h3><p>See the Till or Paybill details your landlord shared for your assigned property.</p></article>
+                <article class="home-benefit-card"><span class="benefit-number">03</span><h3>Track your receipt references</h3><p>Submit a receipt reference after paying directly and see when your landlord reviews it.</p></article>
             </div>
         </section>
-
-        <section class="container">
-            <div class="section-intro">
-                <h2>Featured homes</h2>
-            </div>
-            <div class="property-grid">
-                <article class="property-card">
-                    <img src="./image/img2.jpg" alt="Modern home exterior">
-                    <h3>2-Bedroom Apartment</h3>
-                    <p>Bright interiors, secure parking, close to city transport.</p>
-                </article>
-                <article class="property-card">
-                    <img src="./image/img3.jpg" alt="Contemporary apartment with garden">
-                    <h3>Family Residence</h3>
-                    <p>Spacious layout with a garden and nearby schools.</p>
-                </article>
-                <article class="property-card">
-                    <img src="./image/img4.jpg" alt="Apartment building lounge">
-                    <h3>City Studio</h3>
-                    <p>Fully furnished, flexible lease, ideal for professionals.</p>
-                </article>
+        <section class="home-featured-band">
+            <div class="home-section">
+                <div class="home-section-heading"><div><p class="eyebrow">Important</p><h2>Rent is paid directly to your landlord.</h2></div></div>
+                <p class="tenant-payment-explainer">Rent Master does not collect or transfer rent. Verify the payment details with your landlord, keep your M-Pesa receipt and confirm property and lease details before sending money. A submitted reference is not proof of payment until the landlord verifies it.</p>
+                <a href="how.html" class="text-link">Learn how Rent Master works <span aria-hidden="true">&rarr;</span></a>
             </div>
         </section>
     </main>
-
-    <footer>
-        <p>&copy; 2026 Rent Master | All Rights Reserved</p>
-    </footer>
+    <footer class="home-footer"><div class="home-footer-inner"><a href="index.html" class="logo">Rent Master<span class="brand-period">.</span></a><div class="home-footer-links"><a href="findahome.html">Find a home</a><a href="how.html">How it works</a><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a></div><p class="home-copyright">&copy; 2026 Rent Master. All rights reserved.</p></div></footer>
 </body>
 </html>

@@ -3,69 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Learn how Rent Master connects rental listings, landlord management and tenant rent records.">
     <link rel="stylesheet" href="style.css">
     <title>How it works | Rent Master</title>
 </head>
-<body>
-    <header>
-        <nav>
-            <a href="index.html" class="logo">Rent Master</a>
+<body class="home-page">
+    <header class="home-header">
+        <nav class="home-nav" aria-label="Main navigation">
+            <a href="index.html" class="logo">Rent Master<span class="brand-period">.</span></a>
             <ul class="nav-links">
-                <li><a href="index.html">Home</a></li>
                 <li><a href="findahome.html">Find a home</a></li>
                 <li><a href="Landlords.html">For landlords</a></li>
-                <li><a href="tenants.html">For tenants</a></li>
-                <li><a href="how.html">How it works</a></li>
-                <li><a href="pricing.html">Pricing</a></li>
+                <li><a href="how.html" aria-current="page">How it works</a></li>
+                <li><a href="pricing.html">Plans</a></li>
                 <li><a href="login.html">Log in</a></li>
-                <li><a href="signup.html">Sign up</a></li>
+                <li><a class="nav-signup" href="signup.html">Get started</a></li>
             </ul>
         </nav>
     </header>
-
-    <main class="container">
-        <section class="section-intro">
-            <h1>How Rent Master works</h1>
-            <p>Renting should be clear, secure, and easy to manage. Here is a simple overview of the experience.</p>
+    <main>
+        <section class="listings-hero">
+            <div class="listings-hero-inner">
+                <p class="eyebrow">The rental journey</p>
+                <h1>Clear steps. Better-organized rentals.</h1>
+                <p>Rent Master gives landlords and tenants a shared place for property details, access and rent-reference records.</p>
+            </div>
         </section>
-
-        <div class="card-grid" style="margin-top: 2rem;">
-            <article class="info-card" id="search">
-                <h3>1. Search</h3>
-                <p>Browse homes or properties that match your preferred area, price range, and features.</p>
-            </article>
-            <article class="info-card" id="compare">
-                <h3>2. Compare</h3>
-                <p>Review photos, amenities, and details to compare what matters most to you before making a decision.</p>
-            </article>
-            <article class="info-card" id="connect">
-                <h3>3. Connect</h3>
-                <p>Contact the landlord or property manager to arrange a viewing or ask questions about the listing.</p>
-            </article>
-        </div>
-
-        <section class="section-intro" style="margin-top: 3rem;">
-            <h2>Common questions</h2>
+        <section class="home-section">
+            <div class="home-benefit-grid">
+                <article class="home-benefit-card"><span class="benefit-number">01</span><h3>Landlord lists a home</h3><p>A landlord registers property details, chooses whether to publish a listing and adds private M-Pesa payment instructions.</p></article>
+                <article class="home-benefit-card"><span class="benefit-number">02</span><h3>Tenant gets invited</h3><p>The landlord registers a tenant’s email. The tenant creates an account with that same verified email to access their assigned rental.</p></article>
+                <article class="home-benefit-card"><span class="benefit-number">03</span><h3>Rent is paid directly</h3><p>The tenant pays the landlord outside Rent Master using the stated Till or Paybill, then submits the M-Pesa reference.</p></article>
+                <article class="home-benefit-card"><span class="benefit-number">04</span><h3>Landlord checks the receipt</h3><p>The landlord matches the reference against their M-Pesa statement and confirms or rejects it. The tenant receives an account notice and email.</p></article>
+            </div>
         </section>
-
-        <div class="card-grid">
-            <article class="info-card">
-                <h3>How do I pay rent?</h3>
-                <p>Use the payment section on your account dashboard or follow the instructions shared by your landlord for secure payment.</p>
-            </article>
-            <article class="info-card">
-                <h3>Can I list a property?</h3>
-                <p>Yes. Create an account, choose the landlord option, and begin adding your property details and availability.</p>
-            </article>
-            <article class="info-card">
-                <h3>Do you offer support?</h3>
-                <p>Our team is available to help with account setup, listing guidance, and property search questions.</p>
-            </article>
-        </div>
+        <section class="home-featured-band">
+            <div class="home-section faq-section">
+                <div class="home-section-heading"><div><p class="eyebrow">Good to know</p><h2>Frequently asked questions</h2></div></div>
+                <div class="faq-grid">
+                    <article class="info-card"><h3>Does Rent Master process rent payments?</h3><p>No. Rent is paid directly to the landlord. Rent Master stores the landlord’s instructions and records a tenant-submitted reference; it does not hold or transfer funds.</p></article>
+                    <article class="info-card"><h3>When is a payment marked confirmed?</h3><p>Only after the landlord checks the reference against their M-Pesa statement and manually updates its status.</p></article>
+                    <article class="info-card"><h3>Why can’t I see the full property address?</h3><p>Public listings show the area. Full address and payment instructions are available only to an assigned tenant and the landlord.</p></article>
+                    <article class="info-card"><h3>What should I check before renting?</h3><p>Verify the property, landlord authority, availability, payment recipient and lease terms independently before sending money or signing an agreement.</p></article>
+                </div>
+            </div>
+        </section>
+        <section class="home-landlord-cta">
+            <div><p class="eyebrow">Ready to get started?</p><h2>Bring your rental workflow together.</h2><p>Create an account to register a property or access a rental as a tenant.</p></div>
+            <a href="signup.html" class="btn">Create your account <span aria-hidden="true">&rarr;</span></a>
+        </section>
     </main>
-
-    <footer>
-        <p>&copy; 2026 Rent Master | All Rights Reserved</p>
-    </footer>
+    <footer class="home-footer"><div class="home-footer-inner"><a href="index.html" class="logo">Rent Master<span class="brand-period">.</span></a><div class="home-footer-links"><a href="findahome.html">Find a home</a><a href="pricing.html">Plans</a><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a></div><p class="home-copyright">&copy; 2026 Rent Master. All rights reserved.</p></div></footer>
 </body>
 </html>

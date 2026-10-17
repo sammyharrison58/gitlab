@@ -3,294 +3,125 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Manage your properties, tenants and rent records in Rent Master.">
     <link rel="stylesheet" href="style.css">
-    <title>Landlord Admin | Rent Master</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js" defer></script>
+    <script src="supabase-config.js" defer></script>
+    <script src="app.js" defer></script>
+    <script src="landlord.js" defer></script>
+    <title>Landlord Dashboard | Rent Master</title>
 </head>
-<body>
+<body class="app-page">
     <header>
-        <nav>
+        <nav aria-label="Main navigation">
             <a href="index.html" class="logo">Rent Master</a>
             <ul class="nav-links">
-                <li><a href="index.html">Home</a></li>
                 <li><a href="findahome.html">Find a home</a></li>
-                <li><a href="Landlords.html">For landlords</a></li>
-                <li><a href="tenants.html">For tenants</a></li>
                 <li><a href="how.html">How it works</a></li>
                 <li><a href="pricing.html">Pricing</a></li>
-                <li><a href="login.html">Log in</a></li>
-                <li><a href="signup.html">Sign up</a></li>
+                <li><button type="button" class="nav-text-button" id="sign-out">Log out</button></li>
             </ul>
         </nav>
     </header>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const currentRole = localStorage.getItem('userRole');
-            if (currentRole !== 'landlord') {
-                window.location.href = 'login.html';
-                return;
-            }
-        });
-    </script>
+    <main class="admin-main landlord-dashboard">
+        <p class="production-notice"><strong>Rent collection:</strong> tenants pay you directly using your Till or Paybill. Verify each receipt against your M-Pesa statement before confirming it here. Rent Master does not hold or transfer funds.</p>
+        <p class="production-notice" data-requires-backend hidden></p>
 
-    <div class="landlord-shell">
-        <aside class="sidebar">
-            <div class="sidebar-brand">Rent Master</div>
-            <nav class="sidebar-nav">
-                <a class="sidebar-item active" href="#dashboard">Dashboard</a>
-                <a class="sidebar-item" href="#properties">Properties</a>
-                <a class="sidebar-item" href="#tenants">Tenants</a>
-                <a class="sidebar-item" href="#payments">Payments</a>
-                <a class="sidebar-item" href="#reports">Reports</a>
-            </nav>
-        </aside>
+        <div class="dashboard-topbar" id="dashboard">
+            <div>
+                <p id="landlord-greeting">Property management</p>
+                <h1>Landlord dashboard</h1>
+            </div>
+            <div class="dashboard-actions">
+                <button type="button" id="show-tenant-form">Add tenant</button>
+                <button type="button" class="btn-secondary dashboard-secondary-button" id="show-property-form">Add property</button>
+            </div>
+        </div>
+        <p class="auth-status" id="dashboard-message" role="status" aria-live="polite"></p>
 
-        <main class="admin-main">
-            <header class="dashboard-topbar" id="dashboard">
-                <div>
-                    <p>Welcome back</p>
-                    <h1>Landlord Dashboard</h1>
-                </div>
-                <button type="button" id="show-property-form" aria-controls="property-form" aria-expanded="false">Add property</button>
-            </header>
+        <section class="summary-grid" aria-label="Portfolio summary">
+            <article class="summary-card"><div class="label">Properties</div><div class="value" id="property-count">—</div></article>
+            <article class="summary-card"><div class="label">Active tenants</div><div class="value" id="tenant-count">—</div></article>
+            <article class="summary-card"><div class="label">Pending payment refs</div><div class="value" id="pending-count">—</div></article>
+            <article class="summary-card"><div class="label">Confirmed this month</div><div class="value" id="confirmed-total">—</div></article>
+        </section>
 
-            <form class="panel" id="property-form" hidden>
-                <h2>Add a property</h2>
+        <form class="panel management-form" id="property-form" hidden>
+            <h2>Register a property</h2>
+            <div class="management-form-grid">
+                <div class="form-field"><label for="property-name">Property name</label><input id="property-name" name="name" required maxlength="100"></div>
+                <div class="form-field"><label for="property-area">Public area or neighbourhood</label><input id="property-area" name="public_area" required maxlength="160"></div>
+                <div class="form-field"><label for="property-address">Full address (private to landlord and tenant)</label><input id="property-address" name="exact_address" required maxlength="240"></div>
+                <div class="form-field"><label for="property-rent">Monthly rent (KES)</label><input id="property-rent" name="rent_kes" type="number" min="1" max="1000000000" step="1" required></div>
                 <div class="form-field">
-                    <label for="property-name">Property name</label>
-                    <input id="property-name" name="name" required>
+                    <label for="payment-type">M-Pesa payment type</label>
+                    <select id="payment-type" name="payment_type" required><option value="Till">Buy Goods (Till)</option><option value="Paybill">Paybill</option></select>
                 </div>
-                <div class="form-field">
-                    <label for="property-address">Address</label>
-                    <input id="property-address" name="address" required>
-                </div>
-                <div class="form-field">
-                    <label for="property-rent">Monthly rent (USD)</label>
-                    <input id="property-rent" name="rent" type="number" min="1" step="1" required>
-                </div>
+                <div class="form-field"><label for="payment-number">Till or Paybill number</label><input id="payment-number" name="payment_number" inputmode="numeric" pattern="[0-9]{5,30}" required maxlength="30"></div>
+                <div class="form-field"><label for="payment-account">Account or business name</label><input id="payment-account" name="payment_account" required maxlength="100"></div>
+                <div class="form-field"><label for="property-bedrooms">Bedrooms (optional)</label><input id="property-bedrooms" name="bedrooms" type="number" min="0" max="100"></div>
+                <div class="form-field"><label for="property-bathrooms">Bathrooms (optional)</label><input id="property-bathrooms" name="bathrooms" type="number" min="0" max="100"></div>
+                <div class="form-field"><label for="property-image">HTTPS listing image URL (optional)</label><input id="property-image" name="image_url" type="url" pattern="https://.+" title="Enter a secure HTTPS image URL." maxlength="2048"></div>
+                <div class="form-field form-field-wide"><label for="property-description">Description (optional)</label><textarea id="property-description" name="description" maxlength="2000" rows="3"></textarea></div>
+            </div>
+            <label class="checkbox-wrap listing-checkbox"><input id="property-listed" name="is_listed" type="checkbox" checked><span>Show this property in public home search</span></label>
+            <p class="management-form-help">Only the neighbourhood and listing details are public. The full address and payment details are shared only with your assigned tenants.</p>
+            <div class="dashboard-actions">
                 <button type="submit">Save property</button>
-                <button type="button" class="btn-secondary" id="cancel-property-form">Cancel</button>
-                <p id="property-form-message" role="status" aria-live="polite"></p>
-            </form>
+                <button type="button" class="btn-secondary dashboard-secondary-button" data-close-form="property-form">Cancel</button>
+            </div>
+        </form>
 
-            <section class="summary-grid" aria-label="Dashboard summary">
-                <article class="summary-card">
-                    <div class="label">Rental income</div>
-                    <div class="value">$24,800</div>
-                    <div class="trend">+12.4% this month</div>
-                </article>
-                <article class="summary-card">
-                    <div class="label">Active tenants</div>
-                    <div class="value">38</div>
-                    <div class="trend">96% occupancy</div>
-                </article>
-                <article class="summary-card">
-                    <div class="label">Outstanding</div>
-                    <div class="value">$2,430</div>
-                    <div class="trend">5 tenants behind</div>
-                </article>
-                <article class="summary-card" id="vacancy-summary">
-                    <div class="label">Vacancies</div>
-                    <div class="value" id="vacancy-count">2</div>
-                    <div class="trend" id="vacancy-trend">1 new listing</div>
-                </article>
-            </section>
+        <form class="panel management-form" id="tenant-form" hidden>
+            <h2>Register a tenant</h2>
+            <div class="management-form-grid">
+                <div class="form-field"><label for="tenant-name">Tenant's full name</label><input id="tenant-name" name="name" required maxlength="100"></div>
+                <div class="form-field"><label for="tenant-email">Tenant's email address</label><input id="tenant-email" name="email" type="email" required maxlength="254"></div>
+                <div class="form-field"><label for="tenant-property">Property</label><select id="tenant-property" name="propertyId" required></select></div>
+            </div>
+            <p class="management-form-help">Rent Master will email the tenant with access instructions. The tenant must create and verify an account using this address.</p>
+            <div class="dashboard-actions">
+                <button type="submit">Register tenant</button>
+                <button type="button" class="btn-secondary dashboard-secondary-button" data-close-form="tenant-form">Cancel</button>
+            </div>
+        </form>
 
-            <section class="panel-grid">
-                <div class="panel" id="payments">
-                    <h3>Recent tenant payments</h3>
-                    <table class="payment-table">
-                        <thead>
-                            <tr>
-                                <th>Tenant</th>
-                                <th>Property</th>
-                                <th>Amount</th>
-                                <th>Due date</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Grace M.</td>
-                                <td>Lakeview Villa</td>
-                                <td>$1,750</td>
-                                <td>02 Oct</td>
-                                <td><span class="status-badge status-paid">Paid</span></td>
-                            </tr>
-                            <tr>
-                                <td>Daniel K.</td>
-                                <td>Oak Street Flat</td>
-                                <td>$1,300</td>
-                                <td>05 Oct</td>
-                                <td><span class="status-badge status-pending">Pending</span></td>
-                            </tr>
-                            <tr>
-                                <td>Sarah T.</td>
-                                <td>Harbor House</td>
-                                <td>$1,980</td>
-                                <td>07 Oct</td>
-                                <td><span class="status-badge status-overdue">Overdue</span></td>
-                            </tr>
-                            <tr>
-                                <td>Joseph G.</td>
-                                <td>Bloom Residence</td>
-                                <td>$1,440</td>
-                                <td>10 Oct</td>
-                                <td><span class="status-badge status-paid">Paid</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+        <section class="panel management-section" id="properties">
+            <div class="management-heading"><div><h2>Your properties</h2><p>Listing visibility and private rent instructions.</p></div></div>
+            <div id="property-list" class="management-card-grid"></div>
+            <p class="empty-state" id="property-list-empty">No properties registered yet. Add a property to get started.</p>
+        </section>
 
-                <div class="panel" id="tenants">
-                    <h3>Tenant overview</h3>
-                    <ul class="tenant-list">
-                        <li>
-                            <div>
-                                <div class="tenant-name">Nia L.</div>
-                                <div class="tenant-meta">2 days to due</div>
-                            </div>
-                            <span class="status-badge status-pending">Due</span>
-                        </li>
-                        <li>
-                            <div>
-                                <div class="tenant-name">Ethan B.</div>
-                                <div class="tenant-meta">Paid on time</div>
-                            </div>
-                            <span class="status-badge status-paid">Good</span>
-                        </li>
-                        <li>
-                            <div>
-                                <div class="tenant-name">Maya D.</div>
-                                <div class="tenant-meta">Needs follow-up</div>
-                            </div>
-                            <span class="status-badge status-overdue">Late</span>
-                        </li>
-                    </ul>
-                </div>
-            </section>
+        <section class="panel management-section" id="tenants">
+            <div class="management-heading"><div><h2>Your tenants</h2><p>Manage active access to your properties.</p></div></div>
+            <div class="table-scroll">
+                <table class="payment-table">
+                    <thead><tr><th scope="col">Tenant</th><th scope="col">Property</th><th scope="col">Monthly rent</th><th scope="col">Status</th><th scope="col">Action</th></tr></thead>
+                    <tbody id="tenant-list"></tbody>
+                </table>
+            </div>
+            <p class="empty-state" id="tenant-list-empty">No tenants registered yet.</p>
+        </section>
 
-            <section class="panel" id="properties" style="margin-top: 1.25rem;">
-                <h2>Properties</h2>
-                <p id="property-list-empty">No additional properties have been added.</p>
-                <ul class="tenant-list" id="property-list"></ul>
-            </section>
+        <section class="panel management-section" id="payments">
+            <div class="management-heading"><div><h2>Payment references</h2><p>Review references against your M-Pesa statement. Confirmation is manual.</p></div></div>
+            <div class="table-scroll">
+                <table class="payment-table">
+                    <thead><tr><th scope="col">Tenant</th><th scope="col">Property</th><th scope="col">Rent month</th><th scope="col">Amount</th><th scope="col">M-Pesa reference</th><th scope="col">Status</th><th scope="col">Action</th></tr></thead>
+                    <tbody id="payment-list"></tbody>
+                </table>
+            </div>
+            <p class="empty-state" id="payment-list-empty">No payment references submitted yet.</p>
+        </section>
 
-            <section class="panel" id="reports" style="margin-top: 1.25rem;">
-                <h2>Reports</h2>
-                <p>Download a CSV summary of the current rental income, tenant, outstanding balance, and vacancy figures.</p>
-                <button type="button" id="download-report">Download report</button>
-            </section>
-        </main>
-    </div>
+        <section class="panel management-section" id="activity">
+            <div class="management-heading"><div><h2>Account notifications</h2><p>Recent tenant and payment activity.</p></div></div>
+            <ul class="notice-list" id="landlord-notices"></ul>
+            <p class="empty-state" id="landlord-notices-empty">No recent activity.</p>
+        </section>
+    </main>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            if (localStorage.getItem('userRole') !== 'landlord') return;
-
-            const storageKey = 'landlordProperties';
-            let properties = JSON.parse(localStorage.getItem(storageKey) || '[]');
-            const propertyForm = document.getElementById('property-form');
-            const propertyList = document.getElementById('property-list');
-            const emptyPropertyMessage = document.getElementById('property-list-empty');
-            const addPropertyButton = document.getElementById('show-property-form');
-
-            function renderProperties() {
-                propertyList.replaceChildren();
-                emptyPropertyMessage.hidden = properties.length > 0;
-
-                properties.forEach(function (property) {
-                    const item = document.createElement('li');
-                    const details = document.createElement('div');
-                    const name = document.createElement('div');
-                    const address = document.createElement('div');
-                    const rent = document.createElement('span');
-
-                    name.className = 'tenant-name';
-                    name.textContent = property.name;
-                    address.className = 'tenant-meta';
-                    address.textContent = property.address;
-                    rent.className = 'status-badge status-pending';
-                    rent.textContent = '$' + Number(property.rent).toLocaleString('en-US') + '/mo';
-                    details.append(name, address);
-                    item.append(details, rent);
-                    propertyList.appendChild(item);
-                });
-
-                const vacancyCount = document.getElementById('vacancy-count');
-                const vacancyTrend = document.getElementById('vacancy-trend');
-                vacancyCount.textContent = String(2 + properties.length);
-                vacancyTrend.textContent = properties.length
-                    ? properties.length + ' new listing' + (properties.length === 1 ? '' : 's')
-                    : '1 new listing';
-            }
-
-            addPropertyButton.addEventListener('click', function () {
-                propertyForm.hidden = false;
-                addPropertyButton.setAttribute('aria-expanded', 'true');
-                document.getElementById('property-name').focus();
-            });
-
-            document.getElementById('cancel-property-form').addEventListener('click', function () {
-                propertyForm.reset();
-                propertyForm.hidden = true;
-                addPropertyButton.setAttribute('aria-expanded', 'false');
-                document.getElementById('property-form-message').textContent = '';
-            });
-
-            propertyForm.addEventListener('submit', function (event) {
-                event.preventDefault();
-                if (!propertyForm.reportValidity()) return;
-
-                const formData = new FormData(propertyForm);
-                const property = {
-                    name: String(formData.get('name')).trim(),
-                    address: String(formData.get('address')).trim(),
-                    rent: Number(formData.get('rent'))
-                };
-                if (!property.name || !property.address || !Number.isFinite(property.rent) || property.rent <= 0) {
-                    document.getElementById('property-form-message').textContent = 'Enter a name, address, and valid monthly rent.';
-                    return;
-                }
-
-                properties.push(property);
-                localStorage.setItem(storageKey, JSON.stringify(properties));
-                propertyForm.reset();
-                propertyForm.hidden = true;
-                addPropertyButton.setAttribute('aria-expanded', 'false');
-                document.getElementById('property-form-message').textContent = '';
-                renderProperties();
-                document.getElementById('properties').scrollIntoView({ behavior: 'smooth' });
-            });
-
-            document.getElementById('download-report').addEventListener('click', function () {
-                const rows = [
-                    ['Metric', 'Value'],
-                    ['Rental income', '$24,800'],
-                    ['Active tenants', '38'],
-                    ['Outstanding', '$2,430'],
-                    ['Vacancies', String(2 + properties.length)]
-                ];
-                const csv = rows.map(function (row) {
-                    return row.map(function (value) {
-                        return '"' + value.replace(/"/g, '""') + '"';
-                    }).join(',');
-                }).join('\r\n');
-                const report = new Blob([csv], { type: 'text/csv;charset=utf-8' });
-                const link = document.createElement('a');
-                const reportUrl = URL.createObjectURL(report);
-                link.href = reportUrl;
-                link.download = 'rent-master-report.csv';
-                document.body.appendChild(link);
-                link.click();
-                link.remove();
-                window.setTimeout(function () {
-                    URL.revokeObjectURL(reportUrl);
-                }, 0);
-            });
-
-            renderProperties();
-        });
-    </script>
+    <footer><p>&copy; 2026 Rent Master. All rights reserved.</p></footer>
 </body>
 </html>
